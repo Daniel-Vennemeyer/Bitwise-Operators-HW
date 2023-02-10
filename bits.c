@@ -323,9 +323,9 @@ int floatFloat2Int(unsigned uf) {
   //Followed the the slides from class again
   // slide 9, 12, 14
 
-  int s = uf & 0x80000000;
+  int s = uf & (1 << 31);
   int exp = (uf >> 23) & 255;
-  int frac = (uf & 0x7fffff) | 0x800000;
+  int frac = (uf & 0x7fffff) | (1 << 27);
   int v;
   if(exp < 127)
   {
@@ -333,15 +333,15 @@ int floatFloat2Int(unsigned uf) {
   }
   else if(exp >= 158)
   {
-    return 0x80000000;
+    return (1 << 31);
   } 
   else
   {
     v = frac >> (158 - 8 - exp);
-    if(s)
-    {
-      v = ~v+1;
-    }
+  }
+  if(s)
+  {
+    v = ~v+1;
   }
   return v;
 }
