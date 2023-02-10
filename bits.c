@@ -322,9 +322,9 @@ unsigned floatScale2(unsigned uf) {
 int floatFloat2Int(unsigned uf) {
   //Followed the the slides from class again
   // slide 9, 12, 14
-  int s = uf >> 31 << 31;
+  int s = uf & (1 << 31);
   int exp = (uf >> 23) & 0xFF;
-  int frac = ((uf << 9) >> 9) | (1 << 27);
+  int frac = (uf & 0x7fffff) | (1 << 27);
   int v;
 
   if(exp < 127) 
