@@ -262,33 +262,21 @@ int howManyBits(int x) {
   //goes through and checks every single set of bits and checks whether they are necessary
   // if they are, they are added to the total bits count
 
-  int total_bits = 1;
   int s = x >> 31;
 	x = x^s;
-	int bit_check = !!(x >> 16) <<4;
-  total_bits += bit_check;
-
-	x = x >> bit_check;
-	bit_check = !!(x >> 8) <<3;
-  total_bits += bit_check;
-
-	x = x >> bit_check;
-	bit_check = !!(x >> 4) <<2;
-  total_bits += bit_check;
-
-	x = x >> bit_check;
-	bit_check = !!(x >> 2) << 1;
-  total_bits += bit_check;
-
-	x = x >> bit_check;
-	bit_check = !!(x >> 1);
-  total_bits += bit_check;
-
-	x = x >> bit_check;
-	bit_check = x;
-  total_bits += bit_check;
-
-  return bit_check;
+	int bit_16 = !!(x >> 16) <<4;
+	x = x >> bit_16;
+	int bit_8 = !!(x >> 8) <<3;
+	x = x >> bit_8;
+	int bit_4 = !!(x >> 4) <<2;
+	x = x >> bit_4;
+	int bit_2 = !!(x >> 2) << 1;
+	x = x >> bit_2;
+	int bit_1 = !!(x >> 1);
+	x = x >> bit_1;
+	int bit_0 = x;
+  return bit_16 + bit_8 + bit_4 + bit_2 + bit_1 + bit_0 + 1;
+  
 }
 //float
 /* 
@@ -305,8 +293,8 @@ int howManyBits(int x) {
 unsigned floatScale2(unsigned uf) {
   // follows the example from the slides in class, more or less
   // slide 35
-  int s = (1<<31);
-  if ((uf &(~s)) >= (0xFF <<23))
+  int s = (1 << 31);
+  if ((uf & (~s)) >= (0xFF <<23))
   {
     return uf;
   } 
@@ -316,7 +304,7 @@ unsigned floatScale2(unsigned uf) {
   }
   else
   {
-    return uf + (1<< 23);
+    return uf + (1 << 23);
   }
 }
 /* 
