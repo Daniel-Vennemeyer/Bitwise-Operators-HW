@@ -238,12 +238,12 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  //Determines whether x is equal to its additive inverse (only is true for 0)
+  //Determines whether x is equal to its additive inverse (only is true for 0) but I have to to the inverses of those because of overflow errors
   //in this case the xor operator acts as an equals sign that returns 0 if the two numbers are equal
   //by shifting and anding we get only whether or not the most significant bit is a 1, which it will be for every case except 1
   //this means that you get 1 for every number except zero which you get 0 for
   //I then just toggle that least significant bit with the final xor
-  return ((((x) ^ (~x+1)) >> 31) & 1)^1;
+  return (((~x) & (~(~x + 1))) >> 31) & 1;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -258,20 +258,36 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
+  //goes through and checks every single set of bits and checks whether they are necessary
+  // if they are, they are added to the total bits count
+
+  int total_bits = 1;
   int s = x >> 31;
 	x = x^s;
-	int bit_16 = !!(x>>16)<<4;
-	x = x >> bit_16;
-	int bit_8 = !!(x>>8)<<3;
-	x = x >> bit_8;
-	int bit_4 = !!(x>>4)<<2;
-	x = x >> bit_4;
-	int bit_2 = !!(x>>2)<<1;
-	x = x >> bit_2;
-	int bit_1 = !!(x>>1);
-	x = x >> bit_1;
-	int bit_0 = x;
-  return bit_16 + bit_8 + bit_4 + bit_2 + bit_1 + bit_0 + 1;
+	int bit_check = !!(x >> 16) <<4;
+  total_bits += bit_check;
+
+	x = x >> bit_check;
+	bit_check = !!(x >> 8) <<3;
+  total_bits += bit_check;
+
+	x = x >> bit_check;
+	bit_check = !!(x >> 4) <<2;
+  total_bits += bit_check;
+
+	x = x >> bit_check;
+	bit_check = !!(x >> 2) << 1;
+  total_bits += bit_check;
+
+	x = x >> bit_check;
+	bit_check = !!(x >> 1);
+  total_bits += bit_check;
+
+	x = x >> bit_check;
+	bit_check = x;
+  total_bits += bit_check;
+
+  return bit_check;
 }
 //float
 /* 
