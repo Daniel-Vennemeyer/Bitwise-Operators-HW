@@ -155,7 +155,7 @@ int bitXor(int x, int y) {
  */
 int tmin(void) {
   //tmin should always be -1, which should always be all ones under a twos complement system
-  return ~0;
+  return 1 << 31;
 
 }
 //2
@@ -199,7 +199,7 @@ int negate(int x) {
 int isAsciiDigit(int x) {
   //copied the code I came up with for isLessOrEqual and then replaced y with the max values, 39
   //then I did the same thing to determine whether is was greater than or equal to 30, except I took the not of it and I had to lower the value to 29 because this does the greater than operator not the greter than equal to operator
-  return !((39 + ((~x) + 1) >> 31) & 1) & ((29 + ((~x) + 1) >> 31) & 1);
+  return !((0x39 + ((~x) + 1) >> 31) & 1) & ((0x2f + ((~x) + 1) >> 31) & 1);
 }
 /* 
  * conditional - same as x ? y : z 
@@ -225,7 +225,8 @@ int conditional(int x, int y, int z) {
 int isLessOrEqual(int x, int y) {
   //Subtracts the two numbers (by adding x's additive inverse) 
   //Then returns whether the result is positive or negative by extracting the most significant bit using the shift and and operators
-  return ((y + ((~x) + 1) >> 31) & 1);
+  int sign = !(x >> 31) ^ !(y >> 31);
+  return (sign & (x >> 31)) | (!sign  & !(y+(~x+1) >> 31));
 }
 //4
 /* 
@@ -285,8 +286,14 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-
-  return 2;
+  int s = uf >> 31;
+  int frac = (uf << 9) >> 9;
+  frac *= 2;
+  if (frac >> 23 == 1)
+  {
+    frac >> 1;
+  }
+  return ((uf >> 9) << 9) | frac;
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -301,5 +308,29 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 2;
+  int s = uf >> 31;
+  int frac = (uf << 9) >> 9;
+  int exp = (uf ^ frac) ^ s;
+
+  float m = 1;
+  for (int i = 0; i < 23; i++)
+  {
+    int n = 1;
+    for (int j = 0; j < i; j++)
+    {
+        n *= 2;
+    }
+    m += frac & (1 << i)/n;
+  }
+
+  int e = exp - 127;
+
+  
+  int v = s * m;
+  for (int i = 0; i < e; i ++)
+  {
+    v*=2;
+  }
+
+  return v;
 }
