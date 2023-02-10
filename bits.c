@@ -276,7 +276,7 @@ int howManyBits(int x) {
 	x = x >> bit_1;
 	int bit_0 = x;
   return bit_16 + bit_8 + bit_4 + bit_2 + bit_1 + bit_0 + 1;
-  
+
 }
 //float
 /* 
@@ -324,7 +324,7 @@ int floatFloat2Int(unsigned uf) {
   // slide 9, 12, 14
   int s = uf >> 31 << 31;
   int exp = (uf >> 23) & 0xFF;
-  int frac = ((uf << 8) >> 8) | (1 << 27);
+  int frac = ((uf << 9) >> 9) | (1 << 27);
   int v;
 
   if(exp < 127) 
