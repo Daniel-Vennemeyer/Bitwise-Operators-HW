@@ -144,7 +144,7 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  //Each side only returns the 
+  //Each side returns the half of the unique bits, and then I or them together to get the full xor
   return (~x & y) | (x & ~y);
 }
 /* 
@@ -154,7 +154,7 @@ int bitXor(int x, int y) {
  *   Rating: 1
  */
 int tmin(void) {
-  //tmin should always be -1, which should always be all ones under a twos complement system
+  //tmin should always be one with all zeroes under a twos complement system
   return 1 << 31;
 
 }
@@ -198,7 +198,7 @@ int negate(int x) {
  */
 int isAsciiDigit(int x) {
   //copied the code I came up with for isLessOrEqual and then replaced y with the max values, 39
-  //then I did the same thing to determine whether is was greater than or equal to 30, except I took the not of it and I had to lower the value to 29 because this does the greater than operator not the greter than equal to operator
+  //then I did the same thing to determine whether is was greater than or equal to 30, except I took the not of it and I had to lower the value to 2f because this does the greater than operator not the greter than equal to operator
   return !((0x39 + ((~x) + 1) >> 31) & 1) & ((0x2f + ((~x) + 1) >> 31) & 1);
 }
 /* 
@@ -225,6 +225,7 @@ int conditional(int x, int y, int z) {
 int isLessOrEqual(int x, int y) {
   //Subtracts the two numbers (by adding x's additive inverse) 
   //Then returns whether the result is positive or negative by extracting the most significant bit using the shift and and operators
+  //But in case of overflow, it also looks at the sign of the two numbers and returns 1 if x is negative and y us not
   int sign = !(x >> 31) ^ !(y >> 31);
   return (sign & (x >> 31)) | (!sign  & !(y+(~x+1) >> 31));
 }
@@ -302,8 +303,11 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
+  // follows the example from the slides in class, more or less
+  // slide 35
   int s = (1<<31);
-  if ((uf &(~s)) >= (0xFF <<23)){
+  if ((uf &(~s)) >= (0xFF <<23))
+  {
     return uf;
   } 
   else if ((uf & (0xFF << 23)) == 0)
@@ -328,6 +332,8 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
+  //Followed the the slides from class again
+  // slide 9, 12, 14
   int s = uf >> 31 << 31;
   int exp = (uf >> 23) & 0xFF;
   int frac = ((uf << 8) >> 8) | (1 << 31);
@@ -339,7 +345,7 @@ int floatFloat2Int(unsigned uf) {
   }
   else if(exp >= 158)
   {
-    return 0x80000000;
+    return 1 << 31;
   } 
   else
   {
