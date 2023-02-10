@@ -286,14 +286,18 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  int s = uf >> 31;
-  int frac = (uf << 9) >> 9;
-  frac *= 2;
-  if (frac >> 23 == 1)
+  int s = (1<<31);
+  if ((uf &(~s)) >= (0xFF <<23)){
+    return uf;
+  } 
+  else if ((uf & (0xFF << 23)) == 0)
   {
-    frac >> 1;
+    return (uf & ~(0x1FF << 23)) << 1 | (uf & s);
   }
-  return ((uf >> 9) << 9) | frac;
+  else
+  {
+    return uf + (1<< 23);
+  }
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -308,29 +312,26 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  int s = uf >> 31;
-  int frac = (uf << 9) >> 9;
-  int exp = (uf ^ frac) ^ s;
+  int s = uf >> 31 << 31;
+  int exp = (uf >> 23) & 0xFF;
+  int frac = ((uf << 8) >> 8) | (1 << 31);
+  int v;
 
-  float m = 1;
-  for (int i = 0; i < 23; i++)
+  if(exp < 127) 
   {
-    int n = 1;
-    for (int j = 0; j < i; j++)
+    return 0;
+  }
+  else if(exp >= 158)
+  {
+    return 0x80000000;
+  } 
+  else
+  {
+    v = frac >> (150 - exp);
+    if(s)
     {
-        n *= 2;
-    }
-    m += frac & (1 << i)/n;
+      v = ~v+1;
+    } 
+    return v;
   }
-
-  int e = exp - 127;
-
-  
-  int v = s * m;
-  for (int i = 0; i < e; i ++)
-  {
-    v*=2;
-  }
-
-  return v;
 }
