@@ -336,7 +336,7 @@ int floatFloat2Int(unsigned uf) {
   // slide 9, 12, 14
   int s = uf >> 31 << 31;
   int exp = (uf >> 23) & 0xFF;
-  int frac = ((uf << 8) >> 8) | (1 << 31);
+  int frac = ((uf << 8) >> 8) | (1 << 27);
   int v;
 
   if(exp < 127) 
