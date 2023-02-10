@@ -322,26 +322,26 @@ unsigned floatScale2(unsigned uf) {
 int floatFloat2Int(unsigned uf) {
   //Followed the the slides from class again
   // slide 9, 12, 14
-  int s = uf & (1 << 31);
-  int exp = (uf >> 23) & 0xFF;
-  int frac = (uf & 0x7fffff) | (1 << 27);
-  int v;
 
-  if(exp < 127) 
+  int s = uf & 0x80000000;
+  int exp = (uf >> 23) & 255;
+  int frac = (uf & 0x7fffff) | 0x800000;
+  int v;
+  if(exp < 127)
   {
     return 0;
   }
   else if(exp >= 158)
   {
-    return 1 << 31;
+    return 0x80000000;
   } 
   else
   {
-    v = frac >> (150 - exp);
+    v = frac >> (158 - 8 - exp);
     if(s)
     {
       v = ~v+1;
-    } 
-    return v;
+    }
   }
+  return v;
 }
