@@ -337,7 +337,7 @@ int floatFloat2Int(unsigned uf) {
   } 
   else
   {
-    v = frac >> (158 - 8 - exp);
+    v = frac >> (150 - exp);
   }
   if(s)
   {
